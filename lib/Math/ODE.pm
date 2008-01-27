@@ -5,7 +5,7 @@ use strict;
 use Data::Dumper;
 use Carp;
 use vars qw($AUTOLOAD $VERSION);
-my $VERSION = '0.03';
+my $VERSION = '0.04';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 0;
