@@ -30,7 +30,7 @@ sub evolve {
         	open(FD, ">$self->{file}") or croak "$self->{file}: $!";
 	}
         while ( $t <= $self->{tf} ){
-                # use Runge Kutta to step from $t to $t + $h
+                # use Runge Kutta 4th order to step from $t to $t + $h
                 $y = _RK4($self,$t,$y);
                 if( $self->{verbose} > 1 ){
                         warn "Exiting RK4 with t=$t ," . Dumper($y) . "\n";
@@ -82,6 +82,8 @@ sub _RK4 {
 
 
         for $i ( 0 .. $self->{N}-1 ){ $y->[$i] += ( $w1[$i] + 2 * $w2[$i] + 2 * $w3[$i] + $w4[$i])/6; }
+
+	$self->{values}{$t + $h} = $y;
         return $y;
 }
 sub _init {
@@ -90,6 +92,7 @@ sub _init {
 	# defaults
 	$self->{verbose} = 1;
 	$self->{step} = 0.1;
+	$self->{values} = { t0 =>$self->{t0}, tf=> $self->{tf} };
 	$self->{N}    = scalar( @{ $args{DE} } ) || 1;
 	@$self{keys %args} = values %args;
         if( $self->{N} != scalar(  @{ $args{initial } }) ){
@@ -122,10 +125,7 @@ sub AUTOLOAD {
 	$self->{$a} = shift if @_;
 	return $self->{$a};
 }
-
-
-
-1;
+42;
 __END__
 
 =head1 NAME
