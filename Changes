@@ -1,4 +1,6 @@
-Revision history for Perl extension Math::ODE.
+0.04 Sun Jan 27 02:25:37 EST 2008 
+	- ported to Module::Build
+	- wrote some actual tests
 
 0.03 Fri Dec 14 03:52:33 EST 2001 
 	- added verbose()

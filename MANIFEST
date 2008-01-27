@@ -1,9 +1,8 @@
 README
 Changes
-Makefile.PL
+Build.PL
 MANIFEST
-ODE.pm
-test.pl
+lib/Math/ODE.pm
 example/de1
 example/de2
 example/de3
