@@ -14,9 +14,9 @@ my $o = new Math::ODE ( file => 'data',
 ok( ref $o eq 'Math::ODE', 'new returns proper object' );
 $o->evolve;
 my $eps = $o->{step} ** 4;	# because Math::ODE implements a 4th order Runge-Kutta method
-my @vals =  @{ $o->{values}{0.5} }; 
+my $vals =  $o->values(0.5); 
 
-ok( abs( $vals[0] - 2.5) < $eps, "Constant Coefficient Equation solved correctly, eps=$eps"); 
+ok( abs( $vals->[0] - 2.5) < $eps, "Constant Coefficient Equation solved correctly, eps=$eps"); 
 
 
 sub DE1 { my ($t,$y) = @_; return 5; }
