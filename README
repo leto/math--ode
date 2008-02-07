@@ -16,7 +16,7 @@ SYNOPSIS
                # create new object that stores data in a file
                # and solve the given equation(s) on the interval
                # [0,10], with initial condition y(t0) = 0
-               my $o = new Math::ODE ( file => '/home/user/data',
+               my $o = new Math::ODE ( file => '/home/user/ode-values.txt',
                                step => 0.1,
                                initial => [0],
                                DE => [ \&DE1 ],

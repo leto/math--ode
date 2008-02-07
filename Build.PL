@@ -10,6 +10,8 @@ my $builder = Module::Build->new(
     dist_abstract	=> 'Solve N-th Order Differential Equations (Initial Value Problems)',
     build_requires => {
         'Test::More' => 0,
+	'Data::Dumper' => 0,
+	'Carp'	       => 0,
     },
     add_to_cleanup      => [ 'Math::ODE-*' ],
     create_makefile_pl => 'traditional',

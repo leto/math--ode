@@ -1,7 +1,7 @@
 package Math::ODE;
+use strict;
 require 5.003;
 require Exporter;
-use strict;
 use Data::Dumper;
 use Carp;
 use vars qw($AUTOLOAD $VERSION);
@@ -16,7 +16,7 @@ my @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 my @EXPORT = qw( );
 my %fields;
 
-for my $a ( qw(DE t0 tf step file initial verbose) ) { $fields{$a}++; }
+for my $a ( qw(DE t0 tf step file initial verbose keep_values) ) { $fields{$a}++; }
 
 sub evolve {
 	my $self = shift;
@@ -26,6 +26,7 @@ sub evolve {
 	my $y = $self->{initial};
 	my $file = $self->{file};
 	my $i;
+
 	if( defined $self->{file} ){
         	open(FD, ">$self->{file}") or croak "$self->{file}: $!";
 	}
@@ -83,7 +84,7 @@ sub _RK4 {
 
         for $i ( 0 .. $self->{N}-1 ){ $y->[$i] += ( $w1[$i] + 2 * $w2[$i] + 2 * $w3[$i] + $w4[$i])/6; }
 
-	$self->{values}{$t + $h} = $y;
+	push @{ $self->{values}{$t + $h} } , @$y if $self->{keep_values};
         return $y;
 }
 sub _init {
@@ -92,9 +93,12 @@ sub _init {
 	# defaults
 	$self->{verbose} = 1;
 	$self->{step} = 0.1;
-	$self->{values} = { t0 =>$self->{t0}, tf=> $self->{tf} };
 	$self->{N}    = scalar( @{ $args{DE} } ) || 1;
 	@$self{keys %args} = values %args;
+	$self->{values} = {};
+	#$self->{values}{$self->{t0}} = $self->{t0};
+	#$self->{values}{$self->{tf}} = $self->{tf};
+
         if( $self->{N} != scalar(  @{ $args{initial } }) ){
                 croak "Must have same number of initial conditions as equations!";
         }
