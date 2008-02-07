@@ -4,20 +4,20 @@ use lib File::Spec->catfile("..","lib");
 use Math::ODE;
 use Data::Dumper;
 
-# analytic solution is y(x) = 5 x
+# analytic solution is y(x) = 2 e^{-x}
 my $o = new Math::ODE ( file => 'data',
 			step => 0.1,
-			initial => [0], 
+			initial => [2], 
 			DE => [ \&DE1 ], 
 			t0 => 0,
-			tf => 1 );
-ok( ref $o eq 'Math::ODE', 'new returns proper object' );
+			tf => 5 );
 $o->evolve;
+print Dumper [ $o ];
 my $eps = $o->{step} ** 4;	# because Math::ODE implements a 4th order Runge-Kutta method
-my @vals =  @{ $o->{values}{0.5} }; 
+my @vals =  @{ $o->{values}{3} }; 
+my $res = abs( $vals[0]  - 1 );
+ok( $res < $eps, "Constant Coefficient Equation solved correctly, res=$res"); 
 
-ok( abs( $vals[0] - 2.5) < $eps, "Constant Coefficient Equation solved correctly, eps=$eps"); 
 
-
-sub DE1 { my ($t,$y) = @_; return 5; }
+sub DE1 { my ($t,$y) = @_; return -$y->[0]; }
 
