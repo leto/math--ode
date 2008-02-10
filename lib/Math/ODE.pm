@@ -84,9 +84,22 @@ sub _RK4 {
 
         for $i ( 0 .. $self->{N}-1 ){ $y->[$i] += ( $w1[$i] + 2 * $w2[$i] + 2 * $w3[$i] + $w4[$i])/6; }
 
-	push @{ $self->{values}{$t + $h} } , @$y if $self->{keep_values};
+	$self->_store_values( $t + $h, $y );
+	
         return $y;
 }
+sub _store_values {
+	my ($self,$t, $y) = @_;
+	return unless  $self->{keep_values};
+	my $s = sprintf "%0.12f", $t ; 
+	push @{ $self->{values}{$s} }, @$y;
+}
+sub values_at {
+	my ($self,$t, %args) = @_;
+	return @{ $self->{values}{sprintf("%0.12f",$t)} };
+}
+# because Math::ODE implements a 4th order Runge-Kutta method
+sub error {  $_[0]->{step} ** 4 }
 sub _init {
 	my $self = shift;
 	my %args = @_;
@@ -96,6 +109,7 @@ sub _init {
 	$self->{N}    = scalar( @{ $args{DE} } ) || 1;
 	@$self{keys %args} = values %args;
 	$self->{values} = {};
+	$self->{keep_values} = 1;
 	#$self->{values}{$self->{t0}} = $self->{t0};
 	#$self->{values}{$self->{tf}} = $self->{tf};
 
@@ -109,7 +123,6 @@ sub _init {
 		croak "\$self->t0 must be less than \$self->tf!";
 	}
 
-
 }
 sub new {
 	my $class = shift;
@@ -119,7 +132,6 @@ sub new {
 	return $self;
 }
 
-# I love AUTOLOAD
 sub AUTOLOAD {
 	my $self = shift;
 	my $a = $AUTOLOAD;
