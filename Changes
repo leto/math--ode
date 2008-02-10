@@ -2,7 +2,13 @@
 -------------------------------------
 	- ported to Module::Build
 	- ported tests to Test::More
-	- one can now access computes values with $o->value() 
+	- one can now access computed values with $o->values_at() which 
+	  returns an array of values at a given point 
+	- one can turn off saving computing values in memory with keep_values = 0 in the
+	  arguments to init like 
+	my $ode = new Math::ODE ( file => 'data', keep_values => 0, etc... );
+	  This may be useful if you have a fine mesh size and/or long batch jobs.
+
 
 0.03 Fri Dec 14 03:52:33 EST 2001 
 -------------------------------------
