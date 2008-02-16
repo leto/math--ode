@@ -1,14 +1,19 @@
-0.04 Sun Thu Feb 07 07:09:37 EST 2008 
+0.04 Sat Feb 16 14:19:21 EST 2008 
 -------------------------------------
-	- ported to Module::Build
-	- ported tests to Test::More
+	- ported to Module::Build 
+	- ported tests to Test::More and added some sorely needed Kwalitee
 	- one can now access computed values with $o->values_at() which 
 	  returns an array of values at a given point 
+	- default behaviour changes to retain values internally instaed of printing to STDOUT 
+	  if no { file => $foo } attribute was given
 	- one can turn off saving computing values in memory with keep_values = 0 in the
 	  arguments to init like 
-	my $ode = new Math::ODE ( file => 'data', keep_values => 0, etc... );
+
+	  my $ode = new Math::ODE ( file => 'data', keep_values => 0, etc... );
+
 	  This may be useful if you have a fine mesh size and/or long batch jobs.
 
+	- $o->evolve() now return true on success and undefined on numerical error
 
 0.03 Fri Dec 14 03:52:33 EST 2001 
 -------------------------------------
