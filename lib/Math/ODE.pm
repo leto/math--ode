@@ -1,9 +1,10 @@
 package Math::ODE;
 use strict;
-require 5.003;
+
+require 5.005;
 use Data::Dumper;
 use Carp;
-our $VERSION = '0.04';
+my $VERSION = '0.04';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 0;
@@ -17,28 +18,28 @@ sub evolve {
         	open(FD, ">$file") or croak "$file: $!";
 	}
 
-        while ( $t <= $self->{tf} ){
-                # use Runge Kutta 4th order to step from $t to $t + $h
-                $y = _RK4($self,$t,$y);
+    while ( $t < $self->{tf} ){
+        # use Runge Kutta 4th order to step from $t to $t + $h
+        $y = _RK4($self,$t,$y);
 
-                warn "Exiting RK4 with t=$t ," . Dumper($y) . "\n" if( $self->{verbose} > 1 );
+        warn "Exiting RK4 with t=$t ," . Dumper($y) . "\n" if( $self->{verbose} > 1 );
 
-                for my $i ( 0 .. $self->{N}-1 ){
-                        # check for under/over flow
-                        next unless $y->[$i] =~ qr/nan|infinity/i;
-                        warn "Bailing out, over/under flow at t=$t,y->[$i] = $y->[$i]" if $self->{verbose};
-			return undef;
-                }
-                $t += $h;
-
-		if( defined $file ){
-			my $str = join $delim,  map { sprintf "%0.12f", $_ } ($t, @$y);
-			chop $str;
-                	print FD "$str\n";
-		}
+        for my $i ( 0 .. $self->{N}-1 ){
+            # check for under/over flow
+            next unless $y->[$i] =~ qr/nan|infinity/i;
+            warn "Bailing out, over/under flow at t=$t,y->[$i] = $y->[$i]" if $self->{verbose};
+            return undef;
         }
+        $t += $h;
+
+        if( defined $file ){
+            my $str = join $delim,  map { sprintf "%0.12f", $_ } ($t, @$y);
+		    chop $str;
+            print FD "$str\n";
+	    }
+    }
 	close FD if defined $file;
-        return 42;
+    return 42;
 }
 
 sub _RK4 {
@@ -46,76 +47,94 @@ sub _RK4 {
         # $y = $N - vector of independent variables
         # $h = step size
         # $F = arrayref of coderefs of the equations to solve
-	my $self = shift;
+        my $self = shift;
         my ($t, $y) = @_;
-	my $F = $self->{ODE};
-	my $h = $self->{step};
+        my $F = $self->{ODE};
+        my $h = $self->{step};
 
         ## w vectors hold constants for equations
         ## each $q holds a modified $y vector to feed to the next
         ## for loop ( ie $y + $w1/2 , etc ... )
         my (@w1,@w2,@w3,@w4,$q,$i);
 
-        for $i ( 0 .. $self->{N}-1 ){ $w1[$i] = $h * &{ $F->[$i] }($t,$y); }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + $w1[$i]/2;   }
+        for $i ( 0 .. $self->{N}-1 ){ $w1[$i]  = $h * &{ $F->[$i] }($t,$y);           }
+        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + 0.5*$w1[$i];              }
 
-        for $i ( 0 .. $self->{N}-1 ){ $w2[$i] = $h * &{ $F->[$i] }($t + $h/2,$q); }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + $w2[$i]/2;       }
+        for $i ( 0 .. $self->{N}-1 ){ $w2[$i]  = $h * &{ $F->[$i] }($t + 0.5*$h,$q);  }
+        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + 0.5*$w2[$i];              }
 
-        for $i ( 0 .. $self->{N}-1 ){ $w3[$i] = $h * &{ $F->[$i] }($t + $h/2,$q); }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + $w3[$i];       }
+        for $i ( 0 .. $self->{N}-1 ){ $w3[$i]  = $h * &{ $F->[$i] }($t + 0.5*$h,$q);  }
+        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + $w3[$i];                  }
 
-        for $i ( 0 .. $self->{N}-1 ){ $w4[$i] = $h * &{ $F->[$i] }($t + $h,$q); }
+        for $i ( 0 .. $self->{N}-1 ){ $w4[$i]  = $h * &{ $F->[$i] }($t + $h,$q);      }
 
 
         for $i ( 0 .. $self->{N}-1 ){ $y->[$i] += ( $w1[$i] + 2 * $w2[$i] + 2 * $w3[$i] + $w4[$i])/6; }
 
-	$self->_store_values( $t + $h, $y );
+	    $self->_store_values( $t + $h, $y );
 	
         return $y;
 }
 sub _store_values {
 	my ($self,$t, $y) = @_;
 	return unless  $self->{keep_values};
-	my $s = sprintf "%0.12f", $t ; 
+	my $s = sprintf '%0.12f', $t ; 
 	push @{ $self->{values}{$s} }, @$y;
 }
 sub values_at {
 	my ($self,$t, %args) = @_;
-	return @{ $self->{values}{sprintf("%0.12f",$t)} };
+	return @{ $self->{values}{sprintf('%0.12f',$t)} };
 }
 # because Math::ODE implements a 4th order Runge-Kutta method
 sub error {  $_[0]->{step} ** 4 }
+
 sub _init {
 	my ($self,%args) = @_;
-	#my %args = @_;
 
 	# defaults
 	$self->{keep_values} = 1;
-	$self->{verbose} = 1;
-	$self->{step} = 0.1;
-	$self->{csv}  = 0;
-	$self->{N}    = scalar( @{ $args{ODE} } ) || 1;
+	$self->{verbose}     = 1;
+	$self->{step}        = 0.1; 
+	$self->{csv}         = 0;
+	$self->{N}           = scalar( @{ $args{ODE} } ) || 1;
 
 	@$self{keys %args} = values %args;
 	$self->{values} = {};
 
-        if( $self->{N} != scalar(  @{ $args{initial } }) ){
+    if( $self->{N} != scalar(  @{ $args{initial } }) ){
                 croak "Must have same number of initial conditions as equations!";
-        }
+    }
 	if( $self->{step} <= 0  ){
 		croak "Stepsize must be positive!";
 	}
 	if( $self->{t0} >= $self->{tf} ){
 		croak "\$self->t0 must be less than \$self->tf!";
 	}
+    return $self;
+}
+sub verify_solution {
+    my ($self, $sol, $eps) = @_;
+    $eps ||= 1e-8;
+
+    my $ok = 1;
+    my $maxres = 0;
+    my (@vals, $res);
+
+    for my $pt ( sort keys %{$self->{values}} ){
+        @vals =  $self->values_at($pt);
+        next unless defined $vals[0] && &$sol($pt);
+        $res = abs( $vals[0]  - &$sol($pt) );
+        $maxres = $res if ($res > $maxres);
+        print "pt=$pt, res=$res\n" if ($res > $self->error);
+        $ok = 0 unless $res < $self->error;
+    }
+    $ok ? $maxres : 0;
 }
 sub new {
 	my $class = shift;
 	my $self = {};
 	bless($self, $class);
 	$self->_init(@_);
-	return $self;
 }
 42;
 __END__
@@ -275,7 +294,7 @@ Orwant, Hietaniemi, Macdonald "Mastering Algorithms with Perl" Ch. 16.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001 by Jonathan Leto.  All rights reserved.
+Copyright (c) 2001-2008 by Jonathan Leto.  All rights reserved.
 
 =head1 LICENSE AGREEMENT
 

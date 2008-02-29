@@ -13,7 +13,9 @@
 
 	  This may be useful if you have a fine mesh size and/or long batch jobs.
 
-	- $o->evolve() now return true on success and undefined on numerical error
+	- $o->evolve() now returns true on success and undefined on numerical error
+    - fixed off-by-one bug in _store_values
+
 
 0.03 Fri Dec 14 03:52:33 EST 2001 
 -------------------------------------
