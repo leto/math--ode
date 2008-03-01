@@ -118,24 +118,21 @@ sub _init {
     return $self;
 }
 sub max_error {
-    my ($self, $sols, $eps) = @_;
-    $eps ||= 1e-8;
+    my ($self, $sols) = @_;
 
-    my $maxres = 0;
-    my (@vals, $res);
+    my $max_error = 0;
 
     for my $pt ( sort keys %{$self->{values}} ){
         my $k = 0;
         for my $sol ( @$sols ) {
-            @vals =  $self->values_at($pt);
-            #next unless defined $vals[0] && &$sol($pt);
-            $res = abs( $vals[$k]  - &$sol($pt) );
-            $maxres = $res if ($res > $maxres);
-            #print "pt=$pt, res=$res\n" if ($res > $self->error && debug() );
+            my @vals = $self->values_at($pt);
+            my $res  = abs( $vals[$k]  - &$sol($pt) );
+            $max_error = $res if ($res > $max_error);
+            print "pt=$pt, res=$res\n" if ($res > $self->error && debug() );
             $k++;
         }
     }
-    $maxres;
+    $max_error;
 }
 sub debug { 0 }
 
@@ -287,6 +284,11 @@ the verbosity to 2 will cause a message like the following:
 to be printed on every increment of the independent variable C<$t>. These are the values
 that the 4th Order Runge-Kutta returned for the current value of C<$t>.
 
+=item * 
+my $solution_code_ref = sub { my $x = shift; 5 * $x ** 2 };
+C<$o-E<gt>max_error( [ $solution_code_ref ] );
+
+Returns the maximum error from the computed values and a reference to a list of code references.
 
 
 =back
