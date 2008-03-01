@@ -1,10 +1,12 @@
-0.04 Sat Feb 16 14:19:21 EST 2008 
+0.04 Fri Feb 29 19:04:40 EST 2008 
 -------------------------------------
 	- ported to Module::Build 
-	- ported tests to Test::More and added some sorely needed Kwalitee
+	- ported tests to Test::More and added some rigours tests which
+      verify given analytic solutions at various step sizes
+
 	- one can now access computed values with $o->values_at() which 
 	  returns an array of values at a given point 
-	- default behaviour changes to retain values internally instaed of printing to STDOUT 
+	- default behaviour changes to retain values internally instead of printing to STDOUT 
 	  if no { file => $foo } attribute was given
 	- one can turn off saving computing values in memory with keep_values = 0 in the
 	  arguments to init like 
@@ -15,6 +17,9 @@
 
 	- $o->evolve() now returns true on success and undefined on numerical error
     - fixed off-by-one bug in _store_values
+    - added $o->max_error([ $subref1, $subref2 ] ) to calculate maximum error from a
+        Math::ODE object and an analytic solution, given as an array ref of code refs
+    - t/values_at.t
 
 
 0.03 Fri Dec 14 03:52:33 EST 2001 

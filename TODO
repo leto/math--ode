@@ -1,4 +1,3 @@
 
-
 * detect stiff ODE's and other pathological cases and give some kind of warning
-* big floats
+* routines for 2nd order BVP's
