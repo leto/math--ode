@@ -83,7 +83,12 @@ sub _store_values {
 }
 sub values_at {
 	my ($self,$t, %args) = @_;
-	return @{ $self->{values}{sprintf('%0.12f',$t)} };
+    if ($self->{keep_values}){
+	    return @{ $self->{values}{sprintf('%0.12f',$t)} };
+    } else {
+        warn "Values were not kept because keep_values was set to 0";
+        return;
+    }
 }
 # because Math::ODE implements a 4th order Runge-Kutta method
 sub error {  $_[0]->{step} ** 4 }
