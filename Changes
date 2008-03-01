@@ -1,4 +1,4 @@
-0.04 Fri Feb 29 19:04:40 EST 2008 
+0.04 Fri Feb 29 22:54:30 EST 2008 
 -------------------------------------
 	- ported to Module::Build 
 	- ported tests to Test::More and added some rigours tests which
