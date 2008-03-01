@@ -117,24 +117,28 @@ sub _init {
 	}
     return $self;
 }
-sub verify_solution {
-    my ($self, $sol, $eps) = @_;
+sub max_error {
+    my ($self, $sols, $eps) = @_;
     $eps ||= 1e-8;
 
-    my $ok = 1;
     my $maxres = 0;
     my (@vals, $res);
 
     for my $pt ( sort keys %{$self->{values}} ){
-        @vals =  $self->values_at($pt);
-        next unless defined $vals[0] && &$sol($pt);
-        $res = abs( $vals[0]  - &$sol($pt) );
-        $maxres = $res if ($res > $maxres);
-        print "pt=$pt, res=$res\n" if ($res > $self->error);
-        $ok = 0 unless $res < $self->error;
+        my $k = 0;
+        for my $sol ( @$sols ) {
+            @vals =  $self->values_at($pt);
+            #next unless defined $vals[0] && &$sol($pt);
+            $res = abs( $vals[$k]  - &$sol($pt) );
+            $maxres = $res if ($res > $maxres);
+            #print "pt=$pt, res=$res\n" if ($res > $self->error && debug() );
+            $k++;
+        }
     }
-    $ok ? $maxres : 0;
+    $maxres;
 }
+sub debug { 0 }
+
 sub new {
 	my $class = shift;
 	my $self = {};
