@@ -24,8 +24,8 @@ for my $step (@steps) {
             tf => 5 );
     if( $o->evolve ){
         $sol = sub { my $t=shift; 2 * exp(-$t) };
-        $ok = $o->verify_solution($sol);
-        ok( $ok , "y'=y, y(0)=2, y(x) = 2 e^{-x}\nstep=$step, max error=$ok, expected error=" .$o->error); 
+        $error = $o->max_error([$sol]);
+        ok( $error < $o->error , "y'=y, y(0)=2, y(x) = 2 e^{-x}\nstep=$step, max error=$error, expected error=" .$o->error); 
     } else {
         ok( 0 );
     }
@@ -47,9 +47,9 @@ for my $step (@steps) {
     $o->evolve;
 
     $sol = sub { my $t=shift; -1/($t-1) };
-    $ok = $o->verify_solution($sol);
+    $error = $o->max_error([$sol]);
 
-    ok( $ok,  "y'=y^2, y(0)=1, y(x)=-1(x-1)\n step=$step, max error=$ok, expected error=" . $o->error); 
+    ok( $error < $o->error ,  "y'=y^2, y(0)=1, y(x)=-1/(x-1)\n step=$step, max error=$error, expected error=" . $o->error); 
 }
 
 ######################################
@@ -70,9 +70,9 @@ for my $step (@steps) {
 
     $sol = sub { my $t=shift;  exp(-$t**2) };
 
-    $ok = $o->verify_solution($sol);
+    $error = $o->max_error([$sol]);
 
-    ok( $ok , "y'=-2 x exp(-x^2), y(0) = 1, y(x) = exp(-x^2)\n step=$step, max error=$ok, expected error=" . $o->error); 
+    ok( $error < $o->error , "y'=-2 x exp(-x^2), y(0) = 1, y(x) = exp(-x^2)\n step=$step, max error=$error, expected error=" . $o->error); 
 }
 ##############
 ##############
@@ -100,8 +100,8 @@ for my $step (@steps) {
                         tf => 0.5 );
             $o->evolve;
             my $sol = sub { my $x = shift; (1-$n)*($x+1/(1-$n)) ** (1/($n-1)) };
-            $ok = $o->verify_solution($sol);
-            ok( $ok , "$n-th order nonlinear: step=$step, max error=$ok, expected error=" . $o->error); 
+            $error = $o->max_error([$sol]);
+            ok( $error < $o->error , "$n-th order nonlinear: step=$step, max error=$error, expected error=" . $o->error); 
 
         }
 }
@@ -120,8 +120,8 @@ for my $step (@steps) {
             tf => 10 );
     if ( $o->evolve ) {
         $sol = sub { log(shift) };
-        $ok = $o->verify_solution($sol);
-	    ok( $ok , "y'=1/x, y(1)=1, y(x)=log(x)\n step=$step, max error=$ok, expected error=" .$o->error); 
+        $error = $o->max_error([$sol]);
+	    ok( $error < $o->error , "y'=1/x, y(1)=1, y(x)=log(x)\n step=$step, max error=$error, expected error=" .$o->error); 
     } else {
 	    ok( 0, 'numerical badness');
     }
