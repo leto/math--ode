@@ -1,3 +1,4 @@
+* better way to store values than %.12f
 
 * detect stiff ODE's and other pathological cases and give some kind of warning
 * routines for 2nd order BVP's

@@ -1,6 +1,11 @@
 0.05 Sun Mar 02 09:18:24 EST 2008 
 ------------------------------------
     - fixed POD errors
+    - new behavior is to print to STDOUT if file => undef and keep_values => 0.
+        This could be useful if you want to filter/modify the data before plotting.
+
+        Something like: ./solve_my_ode.pl | find_interesting_values.pl > data; gnuplot data
+    
 
 
 0.04 Fri Feb 29 22:54:30 EST 2008 
