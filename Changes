@@ -11,12 +11,12 @@
 0.04 Fri Feb 29 22:54:30 EST 2008 
 -------------------------------------
 	- ported to Module::Build 
-	- ported tests to Test::More and added some rigours tests which
+	- ported tests to Test::More and added some rigorous tests which
       verify given analytic solutions at various step sizes
 
 	- one can now access computed values with $o->values_at() which 
 	  returns an array of values at a given point 
-	- default behaviour changes to retain values internally instead of printing to STDOUT 
+	- default behavior changes to retain values internally instead of printing to STDOUT 
 	  if no { file => $foo } attribute was given
 	- one can turn off saving computing values in memory with keep_values = 0 in the
 	  arguments to init like 
