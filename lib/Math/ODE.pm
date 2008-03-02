@@ -50,29 +50,27 @@ sub _RK4 {
         # $y = $N - vector of independent variables
         # $h = step size
         # $F = arrayref of coderefs of the equations to solve
-        my $self = shift;
-        my ($t, $y) = @_;
+        my ($self,$t,$y) =  @_;
         my $F = $self->{ODE};
         my $h = $self->{step};
 
         ## w vectors hold constants for equations
         ## each $q holds a modified $y vector to feed to the next
         ## for loop ( ie $y + $w1/2 , etc ... )
-        my (@w1,@w2,@w3,@w4,$q,$i);
+        my (@w1,@w2,@w3,@w4,$q);
+        my @indices = ( 0 .. $self->{N} - 1 );
 
-        for $i ( 0 .. $self->{N}-1 ){ $w1[$i]  = $h * &{ $F->[$i] }($t,$y);           }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + 0.5*$w1[$i];              }
+        map { $w1[$_]  = $h * &{ $F->[$_] }($t,$y)           } @indices;
+        map { $q->[$_] = $y->[$_] + 0.5*$w1[$_]              } @indices;
 
-        for $i ( 0 .. $self->{N}-1 ){ $w2[$i]  = $h * &{ $F->[$i] }($t + 0.5*$h,$q);  }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + 0.5*$w2[$i];              }
+        map { $w2[$_]  = $h * &{ $F->[$_] }($t + 0.5*$h,$q)  } @indices;
+        map { $q->[$_] = $y->[$_] + 0.5*$w2[$_]              } @indices;
 
-        for $i ( 0 .. $self->{N}-1 ){ $w3[$i]  = $h * &{ $F->[$i] }($t + 0.5*$h,$q);  }
-        for $i ( 0 .. $self->{N}-1 ){ $q->[$i] = $y->[$i] + $w3[$i];                  }
+        map { $w3[$_]  = $h * &{ $F->[$_] }($t + 0.5*$h,$q)  } @indices;
+        map { $q->[$_] = $y->[$_] + $w3[$_]                  } @indices;
 
-        for $i ( 0 .. $self->{N}-1 ){ $w4[$i]  = $h * &{ $F->[$i] }($t + $h,$q);      }
-
-
-        for $i ( 0 .. $self->{N}-1 ){ $y->[$i] += ( $w1[$i] + 2 * $w2[$i] + 2 * $w3[$i] + $w4[$i])/6; }
+        map { $w4[$_]  = $h * &{ $F->[$_] }($t + $h,$q)      } @indices;
+        map { $y->[$_]+= ( $w1[$_] + 2 * $w2[$_] + 2 * $w3[$_] + $w4[$_])/6 } @indices;
 
 	    $self->_store_values( $t + $h, $y );
 	
@@ -112,12 +110,10 @@ sub _init {
     if( $self->{N} != scalar(  @{ $args{initial } }) ){
                 croak "Must have same number of initial conditions as equations!";
     }
-	if( $self->{step} <= 0  ){
-		croak "Stepsize must be positive!";
-	}
-	if( $self->{t0} >= $self->{tf} ){
-		croak "\$self->t0 must be less than \$self->tf!";
-	}
+
+    croak "Stepsize must be positive!"               if $self->{step} <= 0;
+    croak "\$self->t0 must be less than \$self->tf!" if $self->{t0}   >= $self->{tf};
+
     return $self;
 }
 sub max_error {
@@ -142,7 +138,7 @@ sub debug { 0 }
 sub new {
 	my $class = shift;
 	my $self = {};
-	bless($self, $class);
+	bless $self, $class;
 	$self->_init(@_);
 }
 42;
