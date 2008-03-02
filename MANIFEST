@@ -18,4 +18,6 @@ t/error.t
 t/ode_systems.t
 t/odes.t
 t/values_at.t
+t/print.t
 TODO
+Makefile.PL

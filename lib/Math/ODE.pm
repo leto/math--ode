@@ -4,7 +4,7 @@ use strict;
 require 5.005;
 use Data::Dumper;
 use Carp;
-my $VERSION = '0.04';
+my $VERSION = '0.05';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 0;
@@ -32,11 +32,14 @@ sub evolve {
         }
         $t += $h;
 
+        my $str = join $delim,  map { sprintf "%0.12f", $_ } ($t, @$y);
+        chop $str;
+
         if( defined $file ){
-            my $str = join $delim,  map { sprintf "%0.12f", $_ } ($t, @$y);
-		    chop $str;
             print FD "$str\n";
-	    }
+	    } elsif ( ! $self->{keep_values} ) {
+            print "$str\n";
+        }
     }
 	close FD if defined $file;
     return 42;
@@ -260,12 +263,12 @@ Returns the end point on the interval if no arguments are given.
 C<$o-E<gt>file($somefile)>
 
 Save data in $somefile. Returns the file in which the data is being saved if no
-arguments are given. If no file is specified, data is printed to STDOUT.  The
-data file will have $N+1 columns (where $N is the number of equations to
-solve), and can be fed directly to gnuplot. The first column is the independent
-variable, and the remaining are the first through nth components of the
-dependent vector. Examples of graphing the data file are in the example/
-directory of the source distribution.
+arguments are given. If no file is specified and keep_values is set to a
+non-true value , data is printed to STDOUT.  The data file will have $N+1
+columns (where $N is the number of equations to solve), and can be fed directly
+to gnuplot. The first column is the independent variable, and the remaining are
+the first through nth components of the dependent vector. Examples of graphing
+the data file are in the example/ directory of the source distribution.
 
 =item *
 
@@ -291,6 +294,7 @@ C<my $solution_code_ref = sub { my $x = shift; 5 * $x ** 2 };>
 C<$o-E<gt>max_error( [ $solution_code_ref ] )>;
 
 Returns the maximum error from the computed values and a reference to a list of code references.
+This should be called after C<$o-E<gt>evolve>.
 
 
 =back
