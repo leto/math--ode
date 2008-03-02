@@ -1,9 +1,9 @@
 ---
 name: Math-ODE
-version: 0.04
+version: 0.05
 author:
   - 'Jonathan Leto <jonathan@leto.net>'
-abstract: Solve N-th Order Differential Equations (Initial Value Problems)
+abstract: Solve N-th Order Differential Equations
 license: perl
 resources:
   license: http://dev.perl.org/licenses/
@@ -14,7 +14,7 @@ build_requires:
 provides:
   Math::ODE:
     file: lib/Math/ODE.pm
-    version: 0.04
+    version: 0.05
 generated_by: Module::Build version 0.280801
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
