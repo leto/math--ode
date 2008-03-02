@@ -79,6 +79,7 @@ for my $step (@steps) {
 
 sub DE1 { my ($t,$y) = @_; -$y->[0]; }
 sub DE2 { my ($t,$y) = @_; $y->[0] ** 2; }
+sub DElog { my ($t,$y) = @_; return 1/$t; }
 
 SKIP: {
 
@@ -110,7 +111,6 @@ for my $step (@steps) {
 # y' = x^-1, y(1) = 1 
 #  Solution: y = ln(x)
 
-sub DElog { my ($t,$y) = @_; return 1/$t; }
 for my $step (@steps) {
     $o = new Math::ODE (
             step => $step,
