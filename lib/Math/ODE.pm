@@ -285,13 +285,24 @@ to be printed on every increment of the independent variable C<$t>. These are th
 that the 4th Order Runge-Kutta returned for the current value of C<$t>.
 
 =item * 
-my $solution_code_ref = sub { my $x = shift; 5 * $x ** 2 };
-C<$o-E<gt>max_error( [ $solution_code_ref ] );
+
+C<my $solution_code_ref = sub { my $x = shift; 5 * $x ** 2 };>
+
+C<$o-E<gt>max_error( [ $solution_code_ref ] )>;
 
 Returns the maximum error from the computed values and a reference to a list of code references.
 
 
 =back
+
+=head1 VERSION
+
+This man page documents Math::ODE version 0.05
+
+The latest released version can always be found at
+http://leto.net/code/Math-ODE/ and there is also a 
+subversion repository available at
+http://leto.net/svn/Math-ODE/ .
 
 =head1 AUTHOR
 
@@ -310,6 +321,6 @@ Copyright (c) 2001-2008 by Jonathan Leto.  All rights reserved.
 =head1 LICENSE AGREEMENT
 
 This package is free software; you can redistribute it and/or
-modify it under the same terms as Perl itself.
+modify it under the same terms as Perl itself, dude.
 
 =cut
