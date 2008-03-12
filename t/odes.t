@@ -1,4 +1,4 @@
-use Test::More tests => 25;
+use Test::More tests => 30;
 use File::Spec;
 use lib File::Spec->catfile("..","lib");
 use Math::ODE;
@@ -6,125 +6,63 @@ use Data::Dumper;
 use strict;
 use warnings;
 
-my ($o, $ok, $sol, $error, @vals, $res);
-my @steps = qw(0.1 0.09 0.08 0.05 0.01 0.005);
+my @steps = qw(0.2 0.1 0.05 0.01 0.005 0.001);
+my %ODES = ( 
+              "y'=y, y(0)=2, y(x) = 2 e^{-x}" => 
+                    [ 
+                        { initial => [2], ODE => [ \&DE1 ], t0 => 0, tf => 2 },
+                        sub { my $t=shift; 2 * exp(-$t) },
+                    ], 
 
-######################################
-# y'   = - y 
-# y(0) = 2
-######################################
-# analytic solution is y(x) = 2 e^{-x}
-######################################
-for my $step (@steps) {
-    $o = new Math::ODE ( 
-            step => $step,
-            initial => [2], 
-            ODE => [ \&DE1 ], 
-            t0 => 0,
-            tf => 5 );
-    if( $o->evolve ){
-        $sol = sub { my $t=shift; 2 * exp(-$t) };
-        $error = $o->max_error([$sol]);
-        ok( $error < $o->error , "y'=y, y(0)=2, y(x) = 2 e^{-x}\nstep=$step, max error=$error, expected error=" .$o->error); 
-    } else {
-        ok( 0 );
-    }
+             "y'=y^2, y(0)=1, y(x)=-1/(x-1)" =>
+                    [ 
+                        { initial => [1], ODE => [ \&DE2 ], t0 => 0, tf => 0.5 },
+                        sub { my $t=shift; -1/($t-1) },
+                    ],
+             "y'=-2 x exp(-x^2), y(0) = 1, y(x) = exp(-x^2)" =>
+                    [ 
+                        { initial => [1], ODE => [ \&DEgauss ], t0 => 0, tf => 2 },
+                        sub { my $t=shift;  exp(-$t**2) },
+                     ],
+             "y' = x^-1, y(1) = 1, y(x) = ln(x)" =>
+                    [   
+                        { initial => [0], ODE => [ \&DElog ], t0 => 1, tf => 2 },
+                        sub { log(shift) },
+                    ],
+             "y' = y^2+1, y(0) = 0, y(x) = tan(x)" =>
+                    [   
+                        # singularity at pi/2 = 1.57...
+                        { initial => [0], ODE => [ \&DEtan ], t0 => 0, tf => 1 },
+                        sub { tan(shift) },
+                    ],
+           );
+
+for my $ode (keys %ODES) {
+    verify_ode($ode, $ODES{$ode});
 }
 
-######################################
-# y' = y^2
-# y(0) = 1 
-######################################
-# analytic solution is y(x) = -1/(x-1)
-######################################
-for my $step (@steps) {
-    $o = new Math::ODE ( 
-			step => $step, 
-			initial => [1], 
-			ODE => [ \&DE2 ], 
-			t0 => 0,
-			tf => 0.5 );
-    $o->evolve;
+### 
 
-    $sol = sub { my $t=shift; -1/($t-1) };
-    $error = $o->max_error([$sol]);
+sub verify_ode
+{
+    my ($description,$ode) = @_;
+    my($args,$solution) = @$ode;
 
-    ok( $error < $o->error ,  "y'=y^2, y(0)=1, y(x)=-1/(x-1)\n step=$step, max error=$error, expected error=" . $o->error); 
-}
 
-######################################
-# y' = - 2 x exp(-x^2)
-# y(0) = 1
-######################################
-# analytic solution is y(x) = exp(-x^2)
-######################################
-sub DEgauss { my ($t,$y) = @_; - 2 * $t * exp ( - $t ** 2 ); }
-for my $step (@steps) {
-    $o = new Math::ODE ( 
-			step => $step,
-			initial => [1], 
-			ODE => [ \&DEgauss ], 
-			t0 => 0,
-			tf => 5 );
-    $o->evolve;
-
-    $sol = sub { my $t=shift;  exp(-$t**2) };
-
-    $error = $o->max_error([$sol]);
-
-    ok( $error < $o->error , "y'=-2 x exp(-x^2), y(0) = 1, y(x) = exp(-x^2)\n step=$step, max error=$error, expected error=" . $o->error); 
-}
-##############
-##############
-
-sub DE1 { my ($t,$y) = @_; -$y->[0]; }
-sub DE2 { my ($t,$y) = @_; $y->[0] ** 2; }
-sub DElog { my ($t,$y) = @_; return 1/$t; }
-
-SKIP: {
-
-skip "stuff", 1;
-
-sub DE3 { my ($t,$y) = @_; $y->[0] ** 3; }
-sub DE4 { my ($t,$y) = @_; $y->[0] ** 4; }
-sub DE5 { my ($t,$y) = @_; $y->[0] ** 5; }
-sub DE6 { my ($t,$y) = @_; $y->[0] ** 6; }
-
-for my $step (@steps) {
-        for my $n ( 3 .. 4 ){
-            my $subname = "DE$n";
-            $o = new Math::ODE (    
-                        step => $step, 
-                        initial => [1], 
-                        ODE => [\&$subname],
-                        t0 => 0,
-                        tf => 0.5 );
-            $o->evolve;
-            my $sol = sub { my $x = shift; (1-$n)*($x+1/(1-$n)) ** (1/($n-1)) };
-            $error = $o->max_error([$sol]);
-            ok( $error < $o->error , "$n-th order nonlinear: step=$step, max error=$error, expected error=" . $o->error); 
-
+    for my $step (@steps){
+        my $o = Math::ODE->new(%$args, step => $step);
+        if( $o->evolve ){
+            my $error  = $o->max_error([$solution]); 
+            my $output = $description."\n\t\tstep=$step, max error=$error, expected error=" . $o->error;
+            ok( $error < $o->error, $output );
+        } else { 
+            ok(0, "Numerical badness for $description at step=$step");
         }
-}
-
-}
-# y' = x^-1, y(1) = 1 
-#  Solution: y = ln(x)
-
-for my $step (@steps) {
-    $o = new Math::ODE (
-            step => $step,
-            initial => [0], 
-            ODE => [ \&DElog ], 
-            t0 => 1,
-            tf => 10 );
-    if ( $o->evolve ) {
-        $sol = sub { log(shift) };
-        $error = $o->max_error([$sol]);
-	    ok( $error < $o->error , "y'=1/x, y(1)=1, y(x)=log(x)\n step=$step, max error=$error, expected error=" .$o->error); 
-    } else {
-	    ok( 0, 'numerical badness');
     }
-
 }
-
+sub DEgauss { my ($t,$y) = @_; - 2 * $t * exp ( - $t ** 2 ); }
+sub DE1     { my ($t,$y) = @_; -$y->[0]; }
+sub DE2     { my ($t,$y) = @_; $y->[0] ** 2; }
+sub DElog   { my ($t,$y) = @_; 1/$t; }
+sub DEtan   { my ($t,$y) = @_; $y->[0] ** 2 + 1; }
+sub tan     { my $t=shift; sin($t)/cos($t); }

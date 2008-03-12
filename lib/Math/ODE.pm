@@ -7,16 +7,23 @@ use Carp;
 my $VERSION = '0.05';
 
 $Data::Dumper::Varname = "y";
-$Data::Dumper::Indent = 0;
+$Data::Dumper::Indent = 1;
 
 sub evolve {
 	my $self = shift;
-	my ($F,$h,$t,$y,$file) = map{ $self->{$_} } qw(ODE step t0 initial file);
+	my ($F,$h,$t,$initial,$file) = map{ $self->{$_} } qw(ODE step t0 initial file);
 	my $delim = $self->{csv} ? ',' : ($self->{delim} || $self->{delimeter} || " ");
+    my $y;
+
+    # don't clobber the initial condition in case we want to do multiple runs
+    # with the same object
+    @$y = @$initial;
 	
 	if( defined $file ){
         	open(FD, ">$file") or croak "$file: $!";
 	}
+
+    $self->_clear_values;
 
     while ( $t < $self->{tf} ){
         # use Runge Kutta 4th order to step from $t to $t + $h
@@ -94,6 +101,29 @@ sub values_at {
 # because Math::ODE implements a 4th order Runge-Kutta method
 sub error {  $_[0]->{step} ** 4 }
 
+sub step {
+    my ($self,$step) = @_;
+    if (defined $step){
+        croak "Stepsize must be strictly between zero and one"
+                if ($step <= 0 || $step >= 1);
+
+        $self->{step} = $step;
+        print "step=$step\n" if debug();
+    }
+    return $self->{step};
+}
+sub initial {
+    my ($self, $initial) = @_;
+
+    croak "not an array ref" unless ref $initial eq "ARRAY";
+
+    $self->{initial} = $initial;
+
+}
+sub _clear_values { 
+    my $self = shift;
+    $self->{values} = {} 
+};
 sub _init {
 	my ($self,%args) = @_;
 
@@ -104,8 +134,9 @@ sub _init {
 	$self->{csv}         = 0;
 	$self->{N}           = scalar( @{ $args{ODE} } ) || 1;
 
-	@$self{keys %args} = values %args;
-	$self->{values} = {};
+    @$self{keys %args} = values %args;
+
+	$self->_clear_values;
 
     if( $self->{N} != scalar(  @{ $args{initial } }) ){
                 croak "Must have same number of initial conditions as equations!";
@@ -123,11 +154,12 @@ sub max_error {
 
     for my $pt ( sort keys %{$self->{values}} ){
         my $k = 0;
+        my @vals = $self->values_at($pt);
+
         for my $sol ( @$sols ) {
-            my @vals = $self->values_at($pt);
             my $res  = abs( $vals[$k]  - &$sol($pt) );
             $max_error = $res if ($res > $max_error);
-            print "pt=$pt, res=$res\n" if ($res > $self->error && debug() );
+            print "pt=$pt, res=$res\n" if ( debug() );
             $k++;
         }
     }
