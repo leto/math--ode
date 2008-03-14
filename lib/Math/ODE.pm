@@ -1,13 +1,19 @@
 package Math::ODE;
 use strict;
+use warnings
 
-require 5.005;
+require 5.005; 
 use Data::Dumper;
+use Config;
 use Carp;
 my $VERSION = '0.05';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 1;
+
+sub _has_long_doubles                 { $Config{d_longdbl}     eq 'define'             }
+sub _has_long_doubles_as_default      { $Config{uselongdouble} eq 'define'             }
+sub _has_long_doubles_same_as_doubles { $Config{doublesize}    == $Config{longdblsize} }
 
 sub evolve {
 	my $self = shift;
