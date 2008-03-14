@@ -1,6 +1,5 @@
 package Math::ODE;
 use strict;
-use warnings
 
 require 5.005; 
 use Data::Dumper;
