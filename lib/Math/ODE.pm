@@ -3,16 +3,11 @@ use strict;
 
 require 5.005; 
 use Data::Dumper;
-use Config;
 use Carp;
-my $VERSION = '0.05';
+my $VERSION = '0.05_01';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 1;
-
-sub _has_long_doubles                 { $Config{d_longdbl}     eq 'define'             }
-sub _has_long_doubles_as_default      { $Config{uselongdouble} eq 'define'             }
-sub _has_long_doubles_same_as_doubles { $Config{doublesize}    == $Config{longdblsize} }
 
 sub evolve {
 	my $self = shift;
@@ -336,10 +331,8 @@ This should be called after C<$o-E<gt>evolve>.
 
 This man page documents Math::ODE version 0.05
 
-The latest released version can always be found at
-http://leto.net/code/Math-ODE/ and there is also a 
-subversion repository available at
-http://leto.net/svn/Math-ODE/ .
+The latest released version can always be found at http://search.cpan.org/dist/Math-ODE/ and
+the git repository lives at http://leto.net/gitweb/ or http://github.com/leto .
 
 =head1 AUTHOR
 
@@ -353,7 +346,7 @@ Orwant, Hietaniemi, Macdonald "Mastering Algorithms with Perl" Ch. 16.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001-2008 by Jonathan Leto.  All rights reserved.
+Copyright (c) 2001-2009 by Jonathan Leto.  All rights reserved.
 
 =head1 LICENSE AGREEMENT
 
