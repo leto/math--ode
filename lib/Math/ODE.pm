@@ -15,13 +15,14 @@ sub evolve
     my ($F,$h,$t,$initial,$file) = map{ $self->{$_} } qw(ODE step t0 initial file);
     my $delim = $self->{csv} ? ',' : ($self->{delim} || $self->{delimeter} || " ");
     my $y;
+    my $fh;
 
     # don't clobber the initial condition in case we want to do multiple runs
     # with the same object
     @$y = @$initial;
 
     if( defined $file ){
-            open(FD, ">$file") or croak "$file: $!";
+            open($fh,'>', $file) or croak "$file: $!";
     }
 
     $self->_clear_values;
@@ -44,13 +45,13 @@ sub evolve
         chop $str;
 
         if( defined $file ){
-            print FD "$str\n";
+            print $fh "$str\n";
         } elsif ( ! $self->{keep_values} ) {
             print "$str\n";
         }
     }
-    close FD if defined $file;
-    return 42;
+    close $fh if defined $file;
+    return $self;
 }
 
 sub _RK4
@@ -178,8 +179,6 @@ sub max_error
     }
     $max_error;
 }
-
-sub debug { 0 }
 
 sub new {
     my $class = shift;

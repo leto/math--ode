@@ -1,4 +1,4 @@
-use Test::More tests => 4;
+use Test::More tests => 5;
 use File::Spec;
 use lib File::Spec->catfile("..","lib");
 use Math::ODE;
@@ -11,8 +11,10 @@ my $o = new Math::ODE ( file => 'data',
 			ODE => [ \&DE1 ], 
 			t0 => 0,
 			tf => 1 );
-ok( ref $o eq 'Math::ODE', 'new returns proper object' );
-if ( $o->evolve ) {
+isa_ok($o, 'Math::ODE');
+isa_ok($o->evolve, 'Math::ODE');
+
+if ($o) {
 	my $eps = $o->{step} ** 4;	# because Math::ODE implements a 4th order Runge-Kutta method
 
 	my $s = sprintf("%0.12f", 0.5);
@@ -51,10 +53,10 @@ $o = new Math::ODE ( file => 'data',
 			t0 => 0,
 			tf => 1 );
 if ( $o->evolve ) {
-	open(FD, $o->{file}) or die $!;
-	my $first_line = <FD>;
+	open (my $fh, '<',  $o->{file}) or die $!;
+	my $first_line = <$fh>;
 	ok( $first_line =~ /(\d+\.\d+),(\d+\.\d+)$/, "CSV works"); 
-	close FD;
+	close $fh or die $!;
 } else {
 	ok( 0, 'CSV died due to numerical shenanigans');
 }
