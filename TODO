@@ -1,5 +1,3 @@
-* howtoo detect what kind of LONG_DOUBLE support perl was compiled with?
-
 * better way to store values than %.12f
     - Using an array ref for $self->{values} would probably give a 20% speedup
 
@@ -7,4 +5,4 @@
 
 * detect stiff ODE's and other pathological cases and give some kind of warning
 
-* routines for 2nd order BVP's
+* routines for 2nd order BVP's using the Shooting Method

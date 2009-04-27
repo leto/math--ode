@@ -14,7 +14,7 @@ build_requires:
 provides:
   Math::ODE:
     file: lib/Math/ODE.pm
-    version: 0.05
+    version: 0.05_01
 generated_by: Module::Build version 0.32
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
