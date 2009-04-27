@@ -1,7 +1,6 @@
 package Math::ODE;
 use strict;
 
-require 5.005;
 use Data::Dumper;
 use Carp;
 my $VERSION = '0.05_01';
