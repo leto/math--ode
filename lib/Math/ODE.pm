@@ -1,7 +1,7 @@
 package Math::ODE;
 use strict;
 
-require 5.005; 
+require 5.005;
 use Data::Dumper;
 use Carp;
 my $VERSION = '0.05_01';
@@ -9,19 +9,20 @@ my $VERSION = '0.05_01';
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 1;
 
-sub evolve {
-	my $self = shift;
-	my ($F,$h,$t,$initial,$file) = map{ $self->{$_} } qw(ODE step t0 initial file);
-	my $delim = $self->{csv} ? ',' : ($self->{delim} || $self->{delimeter} || " ");
+sub evolve
+{
+    my $self = shift;
+    my ($F,$h,$t,$initial,$file) = map{ $self->{$_} } qw(ODE step t0 initial file);
+    my $delim = $self->{csv} ? ',' : ($self->{delim} || $self->{delimeter} || " ");
     my $y;
 
     # don't clobber the initial condition in case we want to do multiple runs
     # with the same object
     @$y = @$initial;
-	
-	if( defined $file ){
-        	open(FD, ">$file") or croak "$file: $!";
-	}
+
+    if( defined $file ){
+            open(FD, ">$file") or croak "$file: $!";
+    }
 
     $self->_clear_values;
 
@@ -44,15 +45,16 @@ sub evolve {
 
         if( defined $file ){
             print FD "$str\n";
-	    } elsif ( ! $self->{keep_values} ) {
+        } elsif ( ! $self->{keep_values} ) {
             print "$str\n";
         }
     }
-	close FD if defined $file;
+    close FD if defined $file;
     return 42;
 }
 
-sub _RK4 {
+sub _RK4
+{
         # $t = dependent variable
         # $y = $N - vector of independent variables
         # $h = step size
@@ -79,20 +81,24 @@ sub _RK4 {
         map { $w4[$_]  = $h * &{ $F->[$_] }($t + $h,$q)      } @indices;
         map { $y->[$_]+= ( $w1[$_] + 2 * $w2[$_] + 2 * $w3[$_] + $w4[$_])/6 } @indices;
 
-	    $self->_store_values( $t + $h, $y );
-	
+        $self->_store_values( $t + $h, $y );
+
         return $y;
+    }
+
+sub _store_values
+{
+    my ($self,$t, $y) = @_;
+    return unless  $self->{keep_values};
+    my $s = sprintf '%0.12f', $t ;
+    push @{ $self->{values}{$s} }, @$y;
 }
-sub _store_values {
-	my ($self,$t, $y) = @_;
-	return unless  $self->{keep_values};
-	my $s = sprintf '%0.12f', $t ; 
-	push @{ $self->{values}{$s} }, @$y;
-}
-sub values_at {
-	my ($self,$t, %args) = @_;
+
+sub values_at
+{
+    my ($self,$t, %args) = @_;
     if ($self->{keep_values}){
-	    return @{ $self->{values}{sprintf('%0.12f',$t)} };
+    return @{ $self->{values}{sprintf('%0.12f',$t)} };
     } else {
         warn "Values were not kept because keep_values was set to 0";
         return;
@@ -101,18 +107,20 @@ sub values_at {
 # because Math::ODE implements a 4th order Runge-Kutta method
 sub error {  $_[0]->{step} ** 4 }
 
-sub step {
+sub step
+{
     my ($self,$step) = @_;
     if (defined $step){
         croak "Stepsize must be strictly between zero and one"
                 if ($step <= 0 || $step >= 1);
 
         $self->{step} = $step;
-        print "step=$step\n" if debug();
     }
     return $self->{step};
 }
-sub initial {
+
+sub initial
+{
     my ($self, $initial) = @_;
 
     croak "not an array ref" unless ref $initial eq "ARRAY";
@@ -120,23 +128,27 @@ sub initial {
     $self->{initial} = $initial;
 
 }
-sub _clear_values { 
-    my $self = shift;
-    $self->{values} = {} 
-};
-sub _init {
-	my ($self,%args) = @_;
 
-	# defaults
-	$self->{keep_values} = 1;
-	$self->{verbose}     = 1;
-	$self->{step}        = 0.1; 
-	$self->{csv}         = 0;
-	$self->{N}           = scalar( @{ $args{ODE} } ) || 1;
+sub _clear_values
+{
+    my $self = shift;
+    $self->{values} = {}
+}
+
+sub _init
+{
+    my ($self,%args) = @_;
+
+    # defaults
+    $self->{keep_values} = 1;
+    $self->{verbose}     = 1;
+    $self->{step}        = 0.1;
+    $self->{csv}         = 0;
+    $self->{N}           = scalar( @{ $args{ODE} } ) || 1;
 
     @$self{keys %args} = values %args;
 
-	$self->_clear_values;
+    $self->_clear_values;
 
     if( $self->{N} != scalar(  @{ $args{initial } }) ){
                 croak "Must have same number of initial conditions as equations!";
@@ -147,7 +159,9 @@ sub _init {
 
     return $self;
 }
-sub max_error {
+
+sub max_error
+{
     my ($self, $sols) = @_;
 
     my $max_error = 0;
@@ -159,20 +173,21 @@ sub max_error {
         for my $sol ( @$sols ) {
             my $res  = abs( $vals[$k]  - &$sol($pt) );
             $max_error = $res if ($res > $max_error);
-            print "pt=$pt, res=$res\n" if ( debug() );
             $k++;
         }
     }
     $max_error;
 }
+
 sub debug { 0 }
 
 sub new {
-	my $class = shift;
-	my $self = {};
-	bless $self, $class;
-	$self->_init(@_);
+    my $class = shift;
+    my $self = {};
+    bless $self, $class;
+    $self->_init(@_);
 }
+
 42;
 __END__
 
