@@ -1,12 +1,12 @@
 ---
 name: Math-ODE
-version: 0.05
+version: 0.05_01
 author:
   - 'Jonathan Leto <jonathan@leto.net>'
 abstract: Solve N-th Order Differential Equations
 license: perl
 resources:
-  license: http://dev.perl.org/licenses/
+  license: ~
 build_requires:
   Carp: 0
   Data::Dumper: 0
@@ -15,7 +15,7 @@ provides:
   Math::ODE:
     file: lib/Math/ODE.pm
     version: 0.05
-generated_by: Module::Build version 0.280801
+generated_by: Module::Build version 0.32
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2
