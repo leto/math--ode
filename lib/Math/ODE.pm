@@ -327,9 +327,7 @@ This should be called after C<$o-E<gt>evolve>.
 
 =back
 
-=head1 VERSION
-
-This man page documents Math::ODE version 0.05
+=head1 LATEST CODE
 
 The latest released version can always be found at http://search.cpan.org/dist/Math-ODE/ and
 the git repository lives at http://leto.net/gitweb/ or http://github.com/leto .
@@ -346,7 +344,7 @@ Orwant, Hietaniemi, Macdonald "Mastering Algorithms with Perl" Ch. 16.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001-2009 by Jonathan Leto.  All rights reserved.
+Copyright (c) 2001-2009 by Jonathan Leto <jonathan@leto.net>.  All rights reserved.
 
 =head1 LICENSE AGREEMENT
 
