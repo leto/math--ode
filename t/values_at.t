@@ -7,13 +7,13 @@ my $val;
 my $file = catfile(qw/t data/);
 
 my $o = new Math::ODE (
-            file        => $file,
-            step        => 0.1,
-            initial     => [0],
-            keep_values => 0,
-            ODE         => [ \&DE1 ],
-            t0          => 0,
-            tf          => 1,
+    file        => $file,
+    step        => 0.1,
+    initial     => [0],
+    keep_values => 0,
+    ODE         => [ \&DE1 ],
+    t0          => 0,
+    tf          => 1,
 );
 if ( $o->evolve ) {
     eval { $val = $o->values_at( 0.1 ) };
