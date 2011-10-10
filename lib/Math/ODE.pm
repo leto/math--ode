@@ -1,5 +1,6 @@
 package Math::ODE;
 use strict;
+use warnings;
 
 use Data::Dumper;
 use Carp;
@@ -343,11 +344,11 @@ This should be called after C<$o-E<gt>evolve>.
 =head1 LATEST CODE
 
 The latest released version can always be found at http://search.cpan.org/dist/Math-ODE/ and
-the git repository lives at http://leto.net/gitweb/ or http://github.com/leto .
+the git repository lives at https://github.com/leto/math--ode .
 
 =head1 AUTHOR
 
-Jonathan Leto <jonathan@leto.net>
+Jonathan "Duke" Leto <jonathan@leto.net>
 
 =head1 SEE ALSO
 
@@ -357,7 +358,7 @@ Orwant, Hietaniemi, Macdonald "Mastering Algorithms with Perl" Ch. 16.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001-2009 by Jonathan Leto <jonathan@leto.net>.  All rights reserved.
+Copyright (c) 2001-2011 by Jonathan "Duke" Leto <jonathan@leto.net>.  All rights reserved.
 
 =head1 LICENSE AGREEMENT
 
