@@ -4,7 +4,7 @@ use warnings;
 
 use Data::Dumper;
 use Carp;
-my $VERSION = '0.05_01';
+my $VERSION = '0.06';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 1;
@@ -343,7 +343,7 @@ This should be called after C<$o-E<gt>evolve>.
 
 =head1 LATEST CODE
 
-The latest released version can always be found at http://search.cpan.org/dist/Math-ODE/ and
+The latest released version can always be found at https://metacpan.org/module/Math::ODE and
 the git repository lives at https://github.com/leto/math--ode .
 
 =head1 AUTHOR
