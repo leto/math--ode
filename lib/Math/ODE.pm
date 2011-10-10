@@ -204,21 +204,24 @@ system of N first order equations, as in MATLAB.
 
 =head1 SYNOPSIS
 
-	use Math::ODE;
-	# create new object that stores data in a file 
-	# and solve the given equation(s) on the interval
-	# [0,10], with initial condition y(t0) = 0
-	my $o = new Math::ODE ( file => '/home/user/data',
-                        step => 0.1,
-                        initial => [0], 
-                        ODE => [ \&DE1 ], 
-                        t0 => 1,
-                        tf => 10 );
-	$o->evolve();
-	# solve the equation y' = 1/$t
-	# $t is the independent variable, a scalar
-	# $y is the dependent variable, an array reference
-	sub DE1 { my ($t,$y) = @_; return 1/$t; }
+    use Math::ODE;
+    # create new object that stores data in a file
+    # and solve the given equation(s) on the interval
+    # [0,10], with initial condition y(t0) = 0
+    my $o = new Math::ODE (
+        file    => '/home/user/data.txt',
+        step    => 0.1,
+        initial => [ 0 ],
+        ODE     => [ \&DE1 ],
+        t0      => 1,
+        tf      => 10,
+    );
+    # Actually numerically solve equations
+    $o->evolve();
+    # solve the equation y' = 1/$t
+    # $t is the independent variable, a scalar
+    # $y is the dependent variable, an array reference
+    sub DE1 { my ($t,$y) = @_; return 1/$t; }
 
 =over 2
 
@@ -228,24 +231,26 @@ C<$o-E<gt>evolve()>
 
 Evolves the equations from C<$o-E<gt>t0> to C<$o-E<gt>tf> using a 4th Order Classic Runge-Kutta method.
 
-	# Example 1: Solve  y'' + y = 0, y(0) = 0, y'(0) = 1
-	#            Solution: y = sin(x)
+    # Example 1: Solve  y'' + y = 0, y(0) = 0, y'(0) = 1
+    #            Solution: y = sin(x)
 
-	use Math::ODE;
-	my $o = new Math::ODE ( file => 'data',
-				verbose => 1,
-				step => 0.1,
-				initial => [0,1], 
-				ODE => [ \&DE0, \&DE1 ], 
-				t0 => 0,
-				tf => 10 );
-	$o->evolve;
+    use Math::ODE;
+    my $o = new Math::ODE (
+        file    => 'data.txt',
+        verbose => 1,
+        step    => 0.1,
+        initial => [ 0, 1 ],
+        ODE     => [ \&DE0, \&DE1 ],
+        t0      => 0,
+        tf      => 10,
+    );
+    $o->evolve;
 
-	# to plot data in gnuplot: plot 'data' using 1:2, sin(x)
+    # to plot data in gnuplot: plot 'data' using 1:2, sin(x)
 
-	# y'' + y = 0
-	sub DE0 { my ($t,$y) = @_; return $y->[1]; }
-	sub DE1 { my ($t,$y) = @_; return -$y->[0]; }
+    # y'' + y = 0
+    sub DE0 { my ($t,$y) = @_; return $y->[1]; }
+    sub DE1 { my ($t,$y) = @_; return -$y->[0]; }
 
 To turn y'' + y = 0 into a system, we will imagine a vector with two
 components, called y. Now let the first component y0 = y and the second
@@ -324,7 +329,7 @@ with the shooting method. You will be guessing initial conditions, and don't fee
 like getting a warning on every guess that blows up (which will be many.) Setting
 the verbosity to 2 will cause a message like the following:
 
-	Exiting RK4 with t=9.9 ,$y1 = ['-0.544013766248772833','-0.839075464413064726'];
+    Exiting RK4 with t=9.9 ,$y1 = ['-0.544013766248772833','-0.839075464413064726'];
 
 to be printed on every increment of the independent variable C<$t>. These are the values
 that the 4th Order Runge-Kutta returned for the current value of C<$t>.
