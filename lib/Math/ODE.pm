@@ -355,6 +355,12 @@ the git repository lives at https://github.com/leto/math--ode .
 
 Jonathan "Duke" Leto <jonathan@leto.net>
 
+=head1 SUPPORT THIS WORK
+
+If you would like to support the development, maintenance and continued support
+of this module, a recurring donation of any size would be greatly appreciated:
+L<https://www.gittip.com/dukeleto/>
+
 =head1 SEE ALSO
 
 Boyce, DiPrima "Elementary Differential Equations" 5th Ed.
@@ -363,7 +369,7 @@ Orwant, Hietaniemi, Macdonald "Mastering Algorithms with Perl" Ch. 16.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2001-2011 by Jonathan "Duke" Leto <jonathan@leto.net>.  All rights reserved.
+Copyright (c) 2001-2013 by Jonathan "Duke" Leto <jonathan@leto.net>.  All rights reserved.
 
 =head1 LICENSE AGREEMENT
 
