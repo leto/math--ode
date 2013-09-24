@@ -1,13 +1,18 @@
-before_script:
-    - sudo apt-get install liblocal-lib-perl
-    - curl -L http://cpanmin.us | sudo perl - --self-upgrade
-    - perl -Mlocal::lib >> /tmp/local_lib_junk.sh && source /tmp/local_lib_junk.sh
-    - export CI_USER=$USER
-    - sudo chown -R $CI_USER ~/.cpanm ~/perl5
-script: "cpanm --installdeps .; perl Build.PL; ./Build test"
-# branches:
-#   only:
-#     - master
+language: "perl"
+perl:
+  - "5.18"
+  - "5.16"
+  - "5.14"
+  - "5.12"
+
+before_install:
+    - cpanm Test::Pod # optional dependency
+
+install:
+    - cpanm -v --installdeps --notest .
+
+script: "perl Build.PL; ./Build test"
+
 notifications:
   recipients:
     - duke@leto.net
