@@ -63,7 +63,7 @@ $o = new Math::ODE (
     tf      => 1,
 );
 if ( $o->evolve ) {
-    open (my $fh, '<',  $o->{file}) or die $!;
+    open (my $fh, '<',  $o->file) or die $!;
     my $first_line = <$fh>;
     ok( $first_line =~ /(\d+\.\d+),(\d+\.\d+)$/, "CSV works");
     close $fh or die $!;

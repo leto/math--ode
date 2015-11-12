@@ -108,6 +108,17 @@ sub values_at
 # because Math::ODE implements a 4th order Runge-Kutta method
 sub error {  $_[0]->{step} ** 4 }
 
+sub file
+{
+    my ($self,$target) = @_;
+
+    if ($target) {
+        $self->{file} = $target;
+    } else {
+        return $self->{file};
+    }
+}
+
 sub step
 {
     my ($self,$step) = @_;
