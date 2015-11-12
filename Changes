@@ -1,6 +1,8 @@
-0.06 Tue Mar 11 23:06:44 EDT 2008 
+0.06 Thu Nov 12 11:48:03 PST 2015
 -----------------------------------
-    
+    - Added the $o->file() method which was documented but never existed
+      Thanks to Wilhelm Braunschober for reporting
+
 0.05 Sun Mar 02 09:18:24 EST 2008 
 ------------------------------------
     - fixed POD errors
