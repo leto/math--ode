@@ -11,7 +11,7 @@ example/gnuplot.4
 lib/Math/ODE.pm
 MANIFEST
 META.yml
-README
+README.md
 t/00-load.t
 t/basic.t
 t/error.t
