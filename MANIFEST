@@ -21,3 +21,4 @@ t/values_at.t
 t/print.t
 TODO
 Makefile.PL
+META.json
