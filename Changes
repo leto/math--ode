@@ -1,3 +1,10 @@
+0.07 Wed Nov 18 20:43:15 PST 2015
+-----------------------------------
+    - Added the $o->format() method which allows setting the value format to
+      something other than the default of %.12f. It can also be specified
+      via the format argument at during object creation.
+      Thanks to Wilhelm Braunschober for the suggestion
+
 0.06 Thu Nov 12 11:48:03 PST 2015
 -----------------------------------
     - Added the $o->file() method which was documented but never existed

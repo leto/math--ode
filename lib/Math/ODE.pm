@@ -4,7 +4,7 @@ use warnings;
 
 use Data::Dumper;
 use Carp;
-my $VERSION = '0.06';
+my $VERSION = '0.07';
 
 $Data::Dumper::Varname = "y";
 $Data::Dumper::Indent = 1;
