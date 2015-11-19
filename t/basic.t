@@ -1,6 +1,6 @@
 use strict;
 use warnings;
-use Test::More tests => 5;
+use Test::More;
 use File::Spec::Functions;
 use lib catfile("..","lib");
 use Math::ODE;
@@ -19,6 +19,14 @@ my $o = new Math::ODE (
 );
 isa_ok($o, 'Math::ODE');
 isa_ok($o->evolve, 'Math::ODE');
+
+cmp_ok($o->format(), 'eq', '%.12f');
+
+$o->format("%.15g");
+
+cmp_ok($o->format(), 'eq', '%.15g');
+
+$o->format("%.12f");
 
 if ($o) {
     my $eps = $o->{step} ** 4;	# because Math::ODE implements a 4th order Runge-Kutta method
@@ -71,4 +79,4 @@ if ( $o->evolve ) {
     ok( 0, 'CSV died due to numerical shenanigans');
 }
 
-
+done_testing;

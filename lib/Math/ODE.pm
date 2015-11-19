@@ -41,7 +41,7 @@ sub evolve
         }
         $t += $h;
 
-        my $str = join $delim,  map { sprintf "%0.12f", $_ } ($t, @$y);
+        my $str = join $delim,  map { sprintf $self->{format}, $_ } ($t, @$y);
         chop $str;
 
         if( defined $file ){
@@ -91,7 +91,7 @@ sub _store_values
 {
     my ($self,$t, $y) = @_;
     return unless  $self->{keep_values};
-    my $s = sprintf '%0.12f', $t ;
+    my $s = sprintf $self->{format}, $t ;
     push @{ $self->{values}{$s} }, @$y;
 }
 
@@ -99,7 +99,7 @@ sub values_at
 {
     my ($self,$t, %args) = @_;
     if ($self->{keep_values}){
-    return @{ $self->{values}{sprintf('%0.12f',$t)} };
+    return @{ $self->{values}{sprintf($self->{format},$t)} };
     } else {
         warn "Values were not kept because keep_values was set to 0";
         return;
@@ -117,6 +117,13 @@ sub file
     } else {
         return $self->{file};
     }
+}
+
+sub format
+{
+    my ($self,$format) = @_;
+
+    $format ? $self->{format} = $format : return $self->{format};
 }
 
 sub step
@@ -157,6 +164,7 @@ sub _init
     $self->{step}        = 0.1;
     $self->{csv}         = 0;
     $self->{N}           = scalar( @{ $args{ODE} } ) || 1;
+    $self->{format}      = '%.12f';
 
     @$self{keys %args} = values %args;
 
@@ -318,6 +326,13 @@ Returns the end point on the interval if no arguments are given.
 
 =item *
 
+C<$o-E<gt>format($format)>
+
+Set the format of the values, which defaults to "%.12f". If you want more
+precision, you might want to use "%.15g".
+
+=item *
+
 C<$o-E<gt>file($somefile)>
 
 Save data in $somefile. Returns the file in which the data is being saved if no
@@ -345,7 +360,7 @@ the verbosity to 2 will cause a message like the following:
 to be printed on every increment of the independent variable C<$t>. These are the values
 that the 4th Order Runge-Kutta returned for the current value of C<$t>.
 
-=item * 
+=item *
 
 C<my $solution_code_ref = sub { my $x = shift; 5 * $x ** 2 };>
 
