@@ -1,0 +1,32 @@
+#!/usr/bin/perl -w
+
+# Stiff Example 1:
+# Solve   y0' = - A*y0 + B*y1   where A=499999.5, B=500000.5
+#         y1' =   B*y0 - A*y1
+# with initial conditions     y0(0)=0, y1(0)=2
+
+# This is an example of a very stiff yet linear system of equations with
+# solution:
+#
+# y0(t) = -exp(-1E6*t) + exp(-t)
+# y1(t) =  exp(-1E6*t) + exp(-t)
+
+use strict;
+use warnings;
+use Math::ODE;
+
+my $A=499999.5;
+my $B=500000.5;
+my $de1 = sub { my ($t,$y) = @_; -$A*$y->[0] + $B*$y->[1] };
+my $de2 = sub { my ($t,$y) = @_; -$B*$y->[0] - $A*$y->[1] };
+
+my $o = new Math::ODE(
+        file    => 'data',
+        step    => 0.1,
+        initial => [0,2],
+        ODE     => [ $de1, $de2],
+        t0      => 0,
+        tf      => 10 );
+$o->evolve;
+system("gnuplot -persist gnuplot.stiff_1");
+
