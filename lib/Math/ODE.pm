@@ -54,6 +54,44 @@ sub evolve
     return $self;
 }
 
+sub _deriv
+{
+    my ($f,$t,$y) = @_;
+
+    my $h = 0.0001;
+
+    # symmetric difference quotient, order $h^2
+    return ( $f->($t, $y + $h) - $f->($t, $y - $h) )/ (2*$h);
+}
+
+# order h^2 method for stiff ODEs
+sub _implicit_midpoint
+{
+        my ($self,$t,$y) =  @_;
+        my $F = $self->{ODE};
+        my $h = $self->{step};
+
+        my @indices = ( 0 .. $self->{N} - 1 );
+        # initial guess of zero
+        my @k = (0);
+        my $deriv;
+
+        # we must approximate $k via Newtons Method
+        # TODO: check $deriv being close to zero and stop after tolerance
+        # has been reached
+        map {
+            map { $deriv = _deriv($F->[$_], $t + 0.5*$h, 0.5*$h*$k[$_])              } @indices;
+
+            map { $k[$_] = $k[$_] - &{$F->[$_]}($t + 0.5*$h, 0.5*$h*$k[$_]) / $deriv } @indices;
+        } (1 .. 10);
+
+        # finally use $k to approximate $y values
+        map { $y->[$_] += $k[$_] * $h} @indices;
+
+        $self->_store_values( $t + $h, $y );
+        return $y;
+}
+
 sub _RK4
 {
         # $t = dependent variable
@@ -85,7 +123,7 @@ sub _RK4
         $self->_store_values( $t + $h, $y );
 
         return $y;
-    }
+}
 
 sub _store_values
 {
